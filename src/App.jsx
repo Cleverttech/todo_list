@@ -14,7 +14,6 @@ import {
 function App() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
-  const [checked, setChecked] = useState(false);
 
   const handleChangeAddItem = (event) => {
     const todo = event.target.value;
@@ -32,8 +31,19 @@ function App() {
     setTodos([...todos, newTodoItem]);
     setTodo("");
   };
-  const handleChangeCheckedItem = (event) => {
-    setChecked(event.target.checked);
+  const handleDeleteItem = (id) => {
+    const newTodos = todos.filter((todo) => {
+      return todo.id !== id;
+    });
+    setTodos(newTodos);
+  };
+
+  const updateCheckedItem = (id, isCompleted) => {
+    const newTodos = todos.map((todo) => {
+      return todo.id === id ? { ...todo, isCompleted: !isCompleted } : todo;
+    });
+
+    setTodos(newTodos);
   };
   console.log("todos", todos);
   return (
@@ -62,18 +72,31 @@ function App() {
       <Box>
         <h1>Todo List</h1>
         <List sx={{ width: "100%", maxWidth: 360 }}>
+          {todos.length === 0 && <p>No Todos</p>}
           {todos.map((todo) => {
-            <ListItem alignItems="flex-start">
-              <FormControlLabel
-                label={todo}
-                control={
-                  <Checkbox
-                    checked={!checked}
-                    onChange={handleChangeCheckedItem}
-                  />
-                }
-              />
-            </ListItem>;
+            return (
+              <ListItem alignItems="flex-start" key={todo.id}>
+                <FormControlLabel
+                  label={todo.newTodo}
+                  control={
+                    <Checkbox
+                      checked={todo.isCompleted}
+                      onChange={() =>
+                        updateCheckedItem(todo.id, todo.isCompleted)
+                      }
+                    />
+                  }
+                />
+                <Button
+                  sx={{ mt: 2 }}
+                  variant="contained"
+                  onClick={() => handleDeleteItem(todo.id)}
+                  color="error"
+                >
+                  Delete
+                </Button>
+              </ListItem>
+            );
           })}
         </List>
       </Box>
